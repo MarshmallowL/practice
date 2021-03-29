@@ -1,5 +1,6 @@
 package com.liugs.practice.mockito;
 
+import org.hamcrest.Matcher;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
@@ -12,6 +13,7 @@ import java.util.LinkedList;
 import java.util.List;
 
 import static org.mockito.Mockito.*;
+import static org.mockito.BDDMockito.*;
 
 /**
  * @author liugs
@@ -144,12 +146,12 @@ public class MockTest {
      * 确保没有和其他mock交互
      */
     @Test
-    public void test7(){
+    public void test7() {
         List mockTwo = mock(List.class);
         mockedList.add("one");
 
         verify(mockedList).add("one");
-        verify(mockedList,never()).add("two");
+        verify(mockedList, never()).add("two");
 
         verifyZeroInteractions(mockTwo);
     }
@@ -160,7 +162,7 @@ public class MockTest {
      * 只在相关情况下使用，避免过度指定、难以维护的测试
      */
     @Test
-    public void test8(){
+    public void test8() {
         mockedList.add("one");
 
         mockedList.add("two");
@@ -176,9 +178,9 @@ public class MockTest {
      * ！！！如果不是链式调用，后续的存根会覆盖之前的存根
      */
     @Test
-    public void test10(){
+    public void test10() {
         when(mockedList.add("one"))
-                .thenReturn(false,true,false);
+                .thenReturn(false, true, false);
         mockedList.add("one");
         System.out.println(mockedList.add("one"));
         System.out.println(mockedList.add("one"));
@@ -191,7 +193,7 @@ public class MockTest {
      * 一般使用thenReturn或者thenThrow即可
      */
     @Test
-    public void test11(){
+    public void test11() {
         when(mockedList.add("one"))
                 .thenAnswer(x -> {
                     Object[] args = x.getArguments();
@@ -208,7 +210,7 @@ public class MockTest {
      * 对同一个方法多次存根，在测试中模拟更改的行为
      */
     @Test
-    public void test12(){
+    public void test12() {
         doThrow(new RuntimeException()).when(mockedList).clear();
         mockedList.clear();
     }
@@ -218,7 +220,7 @@ public class MockTest {
      * spy是真实实例的一个副本，因此在spy上的操作没有存根时，是不会对原始实例的造成影响
      */
     @Test
-    public void test13(){
+    public void test13() {
         List list = new LinkedList();
         List spy = spy(list);
 
@@ -245,9 +247,9 @@ public class MockTest {
      * TODO 不是很懂实际作用
      */
     @Test
-    public void test14(){
-        List list = mock(List.class,RETURNS_SMART_NULLS);
-        List list2 = mock(List.class,x ->{
+    public void test14() {
+        List list = mock(List.class, RETURNS_SMART_NULLS);
+        List list2 = mock(List.class, x -> {
             System.out.println(Arrays.toString(x.getArguments()));
             return false;
         });
@@ -259,17 +261,60 @@ public class MockTest {
      * https://javadoc.io/static/org.mockito/mockito-core/3.8.0/org/mockito/Mockito.html#captors
      */
     @Test
-    public void test15(){
+    public void test15() {
         ArgumentCaptor<List> argument = ArgumentCaptor.forClass(List.class);
         verify(mockedList).add(argument.capture());
-        Assert.assertEquals("one",argument.getValue());
+        Assert.assertEquals("one", argument.getValue());
     }
 
+    /**
+     * 适用于无法轻易改动的第三方代码、遗留代码重构
+     */
+    @Test
+    public void test16() {
+        //使用spy方法创建一个部分模拟
+        List list = spy(new LinkedList());
+        //mock对象，通过thenCallRealMethod()方法实现部分模拟
+        List list1 = mock(List.class);
+        when(list1.add("one")).thenCallRealMethod();
+    }
 
+    /**
+     * reset()方法，会清空所有存根和相互作用
+     * 不建议使用
+     */
+    @Test
+    public void test17() {
+        List mock = mock(List.class);
+        when(mock.size()).thenReturn(10);
+        mock.add(1);
+        reset(mock);
+        System.out.println(mock.size());
+    }
 
+    /**
+     * 引入org.mockito.BDDMockito.*
+     * BDD别名
+     */
+    @Test
+    public void test19() {
+        //given
+        given(mockedList.add("one")).willReturn(true);
+        //when
+        boolean res = mockedList.add("one");
+        //then
+        Assert.assertTrue(res);
+    }
 
-
-
+    /**
+     * 20
+     * 序列化mock
+     * 该行为是为具有不可靠外部依赖关系的BDD规范的特定用例实现的。
+     */
+    @Test
+    public void test20(){
+        List serializableMock = mock(List.class,withSettings().serializable());
+    }
 
 
 }
