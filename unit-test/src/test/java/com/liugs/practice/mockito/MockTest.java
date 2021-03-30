@@ -312,9 +312,35 @@ public class MockTest {
      * 该行为是为具有不可靠外部依赖关系的BDD规范的特定用例实现的。
      */
     @Test
-    public void test20(){
-        List serializableMock = mock(List.class,withSettings().serializable());
+    public void test20() {
+        List serializableMock = mock(List.class, withSettings().serializable());
     }
 
+    /**
+     * 21
+     * @Capter 简化ArgumentCaptor的创建, 捕获泛型参数时可以避免编译器警告
+     * @Spy 替代spy(Object)
+     * @InjectMocks 向测试对象自动注入mock或者spy字段
+     *
+     */
+
+    /**
+     * 22
+     * 超时验证，避免使用
+     */
+
+    /**
+     * 23 自动实例化 @Spies、@InjectMocks
+     */
+
+    /**
+     * 24 使用一行代码存根
+     */
+
+    /**
+     * 25
+     * 验证时忽略存根
+     * verifyNoMoreInteractions(ignoreStubs())
+     */
 
 }
