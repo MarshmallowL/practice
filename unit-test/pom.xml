@@ -9,7 +9,7 @@
 	</parent>
 
 	<groupId>com.liugs.practice</groupId>
-	<artifactId>mockito</artifactId>
+	<artifactId>unit-test</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
 	<name>mockito</name>
 	<description>Demo project for Spring Boot</description>
