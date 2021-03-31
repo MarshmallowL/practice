@@ -6,6 +6,7 @@
     <modules>
         <module>design-pattern</module>
         <module>unit-test</module>
+        <module>baseInJava</module>
     </modules>
     <parent>
         <groupId>org.springframework.boot</groupId>
